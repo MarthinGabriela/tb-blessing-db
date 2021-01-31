@@ -130,21 +130,18 @@ public class TransaksiServiceImpl implements TransaksiService {
     }
 
     @Override
-    public TransaksiModel getLatestOnDate(ZonedDateTime ending) {
-        return transaksiDb.findTop1ByTanggalTransaksiBetweenDesc(new Date(946688461L), Date.from(ending.toInstant())).get(0);
-    }
-
-    @Override
     public List<TransaksiModel> getTransaksiByDate(ZonedDateTime input1, ZonedDateTime input2) {
+        System.out.println("------------------------------------------------------------");
         Date start = Date.from(input1.toInstant());
         Date end = Date.from(input2.toInstant());
+        System.out.println(start + "------------------" + end);
 
         // return transaksiDb.findAllByTanggalTransaksiBetween(start, end);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<TransaksiModel> query = cb.createQuery(TransaksiModel.class);
         Root<TransaksiModel> tm = query.from(TransaksiModel.class);
 
-        Path<Date> tanggal = tm.get("tanggal_transaksi");
+        Path<Date> tanggal = tm.get("tanggalTransaksi");
 
         // List<Predicate> predicates = new ArrayList<>();
 
@@ -164,6 +161,8 @@ public class TransaksiServiceImpl implements TransaksiService {
         if(input2 != null) {
             query.where(cb.lessThanOrEqualTo(tanggal, end));
         }
+
+        System.out.println(query.toString());
         
 
         return entityManager.createQuery(query).getResultList();

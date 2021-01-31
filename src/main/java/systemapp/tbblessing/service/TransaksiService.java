@@ -17,5 +17,4 @@ public interface TransaksiService {
     List<TransaksiModel> getTransaksiByPage(Long input);
     TransaksiModel getLatest();
 	List<TransaksiModel> getTransaksiByDate(ZonedDateTime starting, ZonedDateTime ending);
-	TransaksiModel getLatestOnDate(ZonedDateTime ending);
 }

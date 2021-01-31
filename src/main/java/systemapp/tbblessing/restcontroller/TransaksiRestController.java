@@ -142,26 +142,10 @@ public class TransaksiRestController {
                     return response;
                 }
             } else {
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd z");
-                ZonedDateTime starting = ZonedDateTime.parse(start +" Asia/Jakarta", format);
-                ZonedDateTime ending = ZonedDateTime.parse(end + " Asia/Jakarta", format);
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
+                ZonedDateTime starting = ZonedDateTime.parse(start +" 00:00:00 +0700", format);
+                ZonedDateTime ending = ZonedDateTime.parse(end + " 23:59:59 +0700", format);
 
-                long id = transaksiService.getLatestOnDate(ending).getIdTransaksi();
-                long paging = 10*(page-1);
-                if(!(paging == 0L)) {
-                    id = id - paging;
-                }
-
-                if(id <= 0 && page > 1) {
-                    List<TransaksiModel> list = transaksiService.getAllTransaksi();
-
-                    BaseResponse response = new BaseResponse();
-                    response.setStatus(200);
-                    response.setMessage("Last Transaksi");
-                    response.setResult(list);
-
-                    return response;
-                } else {
                     List<TransaksiModel> list = transaksiService.getTransaksiByDate(starting, ending);
 
                     BaseResponse response = new BaseResponse();
@@ -176,7 +160,6 @@ public class TransaksiRestController {
 
                     return response;
                 }
-            }
     }
 
     @GetMapping(value = "list-transaksi/date")
