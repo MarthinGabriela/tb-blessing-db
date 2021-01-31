@@ -143,7 +143,6 @@ public class TransaksiServiceImpl implements TransaksiService {
                 ending =new SimpleDateFormat("yyyy-MM-dd").parse(end);
             }
         } catch (Exception e) {
-            System.out.println("error woii");
         }
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
