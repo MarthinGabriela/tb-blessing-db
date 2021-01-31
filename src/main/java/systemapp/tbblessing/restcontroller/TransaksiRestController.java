@@ -9,6 +9,8 @@ import systemapp.tbblessing.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -135,15 +137,15 @@ public class TransaksiRestController {
             return response;
         }
     }
-
     /*
     @GetMapping(value = "list-transaksi/date")
     private BaseResponse viewListTransaksiByDate(@RequestParam(name = "start") String start, @RequestParam(name = "end") String end) {
-        Date starting = new SimpleDateFormat("dd-MMM-yyyy").parse(start);
-        Date ending = new SimpleDateFormat("dd-MM-yyyy").parse(end);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd z");
+        ZonedDateTime starting = ZonedDateTime.parse(start +" Asia/Jakarta", format);
+        ZonedDateTime ending = ZonedDateTime.parse(end + " Asia/Jakarta", format);
 
         List<TransaksiModel> list = transaksiService.get
-    } */
+    }*/
 
     @PutMapping(value = "/transaksi/update/{idTransaksi}")
     private BaseResponse updateTransaksi(@PathVariable(value = "idTransaksi") Long idTransaksi, @RequestBody TransaksiModel transaksi) {
