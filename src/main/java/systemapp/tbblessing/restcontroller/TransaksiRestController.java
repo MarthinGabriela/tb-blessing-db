@@ -7,16 +7,8 @@ import systemapp.tbblessing.object.BaseResponse;
 import systemapp.tbblessing.object.TransaksiInput;
 import systemapp.tbblessing.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -154,74 +146,14 @@ public class TransaksiRestController {
     } */
 
     @GetMapping(value = "/transaksi/update/{idTransaksi}")
-    private BaseResponse updateTransaksi(@PathVariable(value = "idTransaksi") Long idTransaksi, @RequestBody TransaksiInput input) {
+    private BaseResponse updateTransaksi(@PathVariable(value = "idTransaksi") Long idTransaksi, @RequestBody TransaksiModel transaksi) {
         try {
-            TransaksiModel transaksiUpdate = new TransaksiModel();
-            transaksiUpdate.setNamaPembeli(input.getNamaPembeli());
-            transaksiUpdate.setAlamat(input.getAlamat());
-            transaksiUpdate.setDiskon(input.getDiskon());
-            Date updatedTanggal = new Date();
-
-            try {
-                updatedTanggal = new SimpleDateFormat("yyyy-MM-dd").parse(input.getTanggal());
-            } catch(Exception e) {
-            }
-            transaksiUpdate.setTanggalTransaksi(updatedTanggal);
-
-            transaksiUpdate.setHutangTransaksi(0L);
-            transaksiUpdate.setNominalTransaksi(0L);
-            transaksiUpdate.setListBarangJual(new ArrayList<BarangJualModel>());
-            transaksiUpdate.setListBarangRetur(new ArrayList<BarangReturModel>());
-            TransaksiModel transaksi = transaksiService.updateTransaksi(idTransaksi, transaksiUpdate);
-
-            BarangModel barang = new BarangModel();
-            BarangJualModel barangJ = new BarangJualModel();
-            BarangReturModel barangR = new BarangReturModel();
-
-            for(BarangJualInput barangJual : input.getListBarangJual()) {
-
-                try {
-                    barang = barangService.getBarangByNamaBarang(barangJual.getNamaBarang());
-                } catch(NoSuchElementException e) {
-                    continue;
-                }
-
-                    barangJ.setHargaJual(barangJual.getHarga());
-                    barangJ.setStockBarangJual(barangJual.getStock());
-                    barangJ.setBarangModel(barangService.getBarangByNamaBarang(barangJual.getNamaBarang()));
-                    barangJ.setTransaksiModel(transaksi);
-                    barangJService.addBarang(barangJ);
-                    transaksi.addListBarangJual(barangJ);
-
-                    barang.setStockBarang(barang.getStockBarang() - barangJ.getStockBarangJual());
-                    barangService.updateBarang(barang.getIdBarang(), barang);
-            }
-
-            for(BarangReturInput barangRetur : input.getListBarangRetur()) {
-
-                try {
-                    barang = barangService.getBarangByNamaBarang(barangRetur.getNamaBarang());
-                } catch(NoSuchElementException e) {
-                    continue;
-                }
-
-                barangR.setHargaRetur(barangRetur.getHarga());
-                barangR.setStockBarangRetur(barangRetur.getStock());
-                barangR.setBarangModel(barangService.getBarangByNamaBarang(barangRetur.getNamaBarang()));
-                barangR.setTransaksiModel(transaksi);
-                barangRService.addBarang(barangR);
-                transaksi.addListBarangRetur(barangR);
-
-                barang.setStockBarang(barang.getStockBarang() + barangR.getStockBarangRetur());
-                barangService.updateBarang(barang.getIdBarang(), barang);
-            }
-
-            TransaksiModel updatedTransaksi = transaksiService.updateNominalTransaksi(transaksi);
-            updatedTransaksi = transaksiService.updateHutangTransaksi(transaksi);
+            transaksiService.updateTransaksi(idTransaksi, transaksi);
+            TransaksiModel updatedTransaksi = transaksiService.getTransaksiByIdTransaksi(idTransaksi);
             
             BaseResponse response = new BaseResponse();
             response.setStatus(200);
-            response.setMessage("Add Transaksi Sukses");
+            response.setMessage("Update Transaksi Sukses");
             response.setResult(updatedTransaksi);
 
             return response;
