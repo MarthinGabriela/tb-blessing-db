@@ -142,23 +142,19 @@ public class TransaksiRestController {
                     return response;
                 }
             } else {
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
-                ZonedDateTime starting = ZonedDateTime.parse(start +" 00:00:00 +0700", format);
-                ZonedDateTime ending = ZonedDateTime.parse(end + " 23:59:59 +0700", format);
+                List<TransaksiModel> list = transaksiService.getTransaksiByDate(start, end, page);
 
-                    List<TransaksiModel> list = transaksiService.getTransaksiByDate(starting, ending);
+                BaseResponse response = new BaseResponse();
+                response.setStatus(200);
+                if(list.get(0).getIdTransaksi().equals(1L)) {
+                    response.setMessage("Last Page");
+                } else {
+                    response.setMessage("Next Page");
+                }
+                Collections.reverse(list);
+                response.setResult(list);
 
-                    BaseResponse response = new BaseResponse();
-                    response.setStatus(200);
-                    if(list.get(0).getIdTransaksi().equals(1L)) {
-                        response.setMessage("Last Page");
-                    } else {
-                        response.setMessage("Next Page");
-                    }
-                    Collections.reverse(list);
-                    response.setResult(list);
-
-                    return response;
+                return response;
                 }
     }
 
@@ -168,9 +164,10 @@ public class TransaksiRestController {
         ZonedDateTime starting = ZonedDateTime.parse(start +" Asia/Jakarta", format);
         ZonedDateTime ending = ZonedDateTime.parse(end + " Asia/Jakarta", format);
 
-        List<TransaksiModel> list = transaksiService.getTransaksiByDate(starting, ending);
-        BaseResponse response = new BaseResponse(200, "List Transaksi bertanggal", list);
-        return response;
+        // List<TransaksiModel> list = transaksiService.getTransaksiByDate(starting, ending);
+        // BaseResponse response = new BaseResponse(200, "List Transaksi bertanggal", list);
+        // return response;
+        return null;
     }
 
     @PutMapping(value = "/transaksi/update/{idTransaksi}")

@@ -9,7 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -130,41 +132,40 @@ public class TransaksiServiceImpl implements TransaksiService {
     }
 
     @Override
-    public List<TransaksiModel> getTransaksiByDate(ZonedDateTime input1, ZonedDateTime input2) {
-        System.out.println("------------------------------------------------------------");
-        Date start = Date.from(input1.toInstant());
-        Date end = Date.from(input2.toInstant());
-        System.out.println(start + "------------------" + end);
+    public List<TransaksiModel> getTransaksiByDate(String start, String end, long page) {
+        Date starting = null;
+        Date ending = null;
+        try{
+            if(start != null) {
+                starting = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+            }
+            if(end != null) {
+                ending =new SimpleDateFormat("yyyy-MM-dd").parse(end);
+            }
+        } catch (Exception e) {
+            System.out.println("error woii");
+        }
 
-        // return transaksiDb.findAllByTanggalTransaksiBetween(start, end);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<TransaksiModel> query = cb.createQuery(TransaksiModel.class);
         Root<TransaksiModel> tm = query.from(TransaksiModel.class);
 
         Path<Date> tanggal = tm.get("tanggalTransaksi");
+        List<Predicate> predicates = new ArrayList<>();
 
-        // List<Predicate> predicates = new ArrayList<>();
-
-        // if(input1 != null) {
-        //     predicates.add(cb.greaterThanOrEqualTo(tanggal, start));
-        // }
-
-        // if(input2 != null) {
-        //     predicates.add(cb.greaterThanOrEqualTo(tanggal, end));
-        // }
-
-        query.select(tm);
-
-        if(input1 != null) {
-            query.where(cb.greaterThanOrEqualTo(tanggal, start));
+        if(starting != null) {
+            predicates.add(cb.greaterThanOrEqualTo( tanggal, starting));
         }
-        if(input2 != null) {
-            query.where(cb.lessThanOrEqualTo(tanggal, end));
+        if(ending != null) {
+            predicates.add(cb.lessThanOrEqualTo( tanggal, ending));
         }
 
-        System.out.println(query.toString());
-        
+        query.select(tm).where(predicates.toArray(new Predicate[]{})).orderBy(cb.desc(tanggal));
 
-        return entityManager.createQuery(query).getResultList();
+        return entityManager
+                    .createQuery(query)
+                    .setFirstResult((int)(page-1) * 10)
+                    .setMaxResults(10)
+                    .getResultList();
     }
 }
