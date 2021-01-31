@@ -145,10 +145,13 @@ public class TransaksiRestController {
         List<TransaksiModel> list = transaksiService.get
     } */
 
-    @GetMapping(value = "/transaksi/update/{idTransaksi}")
+    @PutMapping(value = "/transaksi/update/{idTransaksi}")
     private BaseResponse updateTransaksi(@PathVariable(value = "idTransaksi") Long idTransaksi, @RequestBody TransaksiModel transaksi) {
         try {
+            transaksi.setTanggalTransaksi(transaksiService.getTransaksiByIdTransaksi(idTransaksi).getTanggalTransaksi());
             transaksiService.updateTransaksi(idTransaksi, transaksi);
+            transaksiService.updateHutangTransaksi(transaksi);
+            transaksiService.updateNominalTransaksi(transaksi);
             TransaksiModel updatedTransaksi = transaksiService.getTransaksiByIdTransaksi(idTransaksi);
             
             BaseResponse response = new BaseResponse();
