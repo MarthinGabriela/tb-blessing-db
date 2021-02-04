@@ -158,21 +158,26 @@ public class TransaksiRestController {
                 }
     }
 
-    @GetMapping(value = "list-transaksi/date")
-    private BaseResponse viewListTransaksiByDate(@RequestParam(name = "start") String start, @RequestParam(name = "end") String end) {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd z");
-        ZonedDateTime starting = ZonedDateTime.parse(start +" Asia/Jakarta", format);
-        ZonedDateTime ending = ZonedDateTime.parse(end + " Asia/Jakarta", format);
-
-        // List<TransaksiModel> list = transaksiService.getTransaksiByDate(starting, ending);
-        // BaseResponse response = new BaseResponse(200, "List Transaksi bertanggal", list);
-        // return response;
-        return null;
-    }
-
     @PutMapping(value = "/transaksi/update/{idTransaksi}")
     private BaseResponse updateTransaksi(@PathVariable(value = "idTransaksi") Long idTransaksi, @RequestBody UpdateTransaksiInput transaksi) {
         try {
+            TransaksiModel oldTransaksi = transaksiService.getTransaksiByIdTransaksi(idTransaksi);
+            for(BarangJualModel barangJ : oldTransaksi.getListBarangJual()) {
+                BarangModel barang = barangJ.getBarangModel();
+
+                barang.setStockBarang(barang.getStockBarang() + barangJ.getStockBarangJual());
+                barangService.updateBarang(barang.getIdBarang(), barang);
+                barangJService.deleteBarang(barangJ.getIdBarangJual());
+            }
+
+            for(BarangReturModel barangR : oldTransaksi.getListBarangRetur()) {
+                BarangModel barang = barangR.getBarangModel();
+
+                barang.setStockBarang(barang.getStockBarang() - barangR.getStockBarangRetur());
+                barangService.updateBarang(barang.getIdBarang(), barang);
+                barangRService.deleteBarang(barangR.getIdBarangRetur());
+            }
+
             TransaksiModel trans = new TransaksiModel();
             trans.setAlamat(transaksi.getAlamat());
             trans.setDiskon(transaksi.getDiskon());
