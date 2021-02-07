@@ -80,7 +80,7 @@ public class TransaksiServiceImpl implements TransaksiService {
 
         try {
             for(int i = 0; i < transaksi.getListBarangJual().size(); i++) {
-                nominal += transaksi.getListBarangJual().get(i).getHargaJual();
+                nominal += transaksi.getListBarangJual().get(i).getHargaJual() * transaksi.getListBarangJual().get(i).getStockBarangJual();
             }
         } catch (NullPointerException e) {
 
@@ -92,7 +92,7 @@ public class TransaksiServiceImpl implements TransaksiService {
 
         try {
             for(int i = 0; i < transaksi.getListBarangRetur().size(); i++) {
-                nominal -= transaksi.getListBarangRetur().get(i).getHargaRetur();
+                nominal -= transaksi.getListBarangRetur().get(i).getHargaRetur() * transaksi.getListBarangRetur().get(i).getStockBarangRetur();
             }
         } catch (NullPointerException e) {
             
