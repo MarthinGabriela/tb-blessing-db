@@ -4,6 +4,7 @@ import systemapp.tbblessing.model.*;
 import systemapp.tbblessing.object.BarangJualInput;
 import systemapp.tbblessing.object.BarangReturInput;
 import systemapp.tbblessing.object.BaseResponse;
+import systemapp.tbblessing.object.PageResponse;
 import systemapp.tbblessing.object.TransaksiInput;
 import systemapp.tbblessing.object.UpdateTransaksiInput;
 import systemapp.tbblessing.service.*;
@@ -106,7 +107,7 @@ public class TransaksiRestController {
     }
 
     @GetMapping(value = "/list-transaksi")
-    private BaseResponse viewListTransaksi(
+    private PageResponse viewListTransaksi(
         @RequestParam(name="page") Long page,
         @RequestParam(name="start", required = false) String start,
         @RequestParam(name="end", required = false) String end) {
@@ -117,24 +118,33 @@ public class TransaksiRestController {
                     id = id - paging;
                 }
 
-                if(id <= 0 && page > 1) {
+                if(transaksiService.getLatest().getIdTransaksi() < 10) {
                     List<TransaksiModel> list = transaksiService.getAllTransaksi();
 
-                    BaseResponse response = new BaseResponse();
+                    PageResponse response = new PageResponse();
                     response.setStatus(200);
-                    response.setMessage("Last Transaksi");
+                    response.setMessage(false);
+                    response.setResult(list);
+
+                    return response;
+                } else if(id <= 0 && page > 1) {
+                    List<TransaksiModel> list = transaksiService.getAllTransaksi();
+
+                    PageResponse response = new PageResponse();
+                    response.setStatus(200);
+                    response.setMessage(false);
                     response.setResult(list);
 
                     return response;
                 } else {
                     List<TransaksiModel> list = transaksiService.getTransaksiByPage(id);
 
-                    BaseResponse response = new BaseResponse();
+                    PageResponse response = new PageResponse();
                     response.setStatus(200);
                     if(list.get(0).getIdTransaksi().equals(1L)) {
-                        response.setMessage("Last Page");
+                        response.setMessage(false);
                     } else {
-                        response.setMessage("Next Page");
+                        response.setMessage(true);
                     }
                     Collections.reverse(list);
                     response.setResult(list);
@@ -144,12 +154,12 @@ public class TransaksiRestController {
             } else {
                 List<TransaksiModel> list = transaksiService.getTransaksiByDate(start, end, page);
 
-                BaseResponse response = new BaseResponse();
+                PageResponse response = new PageResponse();
                 response.setStatus(200);
                 if(list.get(0).getIdTransaksi().equals(1L)) {
-                    response.setMessage("Last Page");
+                    response.setMessage(false);
                 } else {
-                    response.setMessage("Next Page");
+                    response.setMessage(true);
                 }
                 Collections.reverse(list);
                 response.setResult(list);
