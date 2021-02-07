@@ -40,4 +40,9 @@ public class BarangJualServiceImpl implements BarangJualService {
             throw new NoSuchElementException();
         }
     }
+
+    @Override
+    public void deleteByTransaksi(TransaksiModel transaksi){
+        barangJualDb.deleteByTransaksiModel(transaksi);
+    }
 }

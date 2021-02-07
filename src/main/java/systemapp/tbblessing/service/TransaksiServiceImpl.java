@@ -43,6 +43,7 @@ public class TransaksiServiceImpl implements TransaksiService {
 
     @Override
     public TransaksiModel updateTransaksi(Long idTransaksi, TransaksiModel transaksi) {
+        updateNominalTransaksi(transaksi);
         return transaksiDb.save(transaksi);
     }
 

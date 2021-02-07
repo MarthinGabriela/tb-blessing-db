@@ -8,4 +8,5 @@ import java.util.Optional;
 @Repository
 public interface BarangJualDb extends JpaRepository<BarangJualModel, Long>{
     Optional<BarangJualModel> findByIdBarangJual(Long idBarangJual);
+	void deleteByTransaksiModel(TransaksiModel transaksi);
 }

@@ -7,4 +7,5 @@ public interface BarangJualService {
     BarangJualModel updateBarang(Long idBarangJual, BarangJualModel barangJualModel);
     void deleteBarang(Long idBarang);
     BarangJualModel getBarangByIdBarang(Long idBarang);
+	void deleteByTransaksi(TransaksiModel transaksi);
 }
