@@ -53,7 +53,7 @@ public class TransaksiRestController {
             } catch(NoSuchElementException e) {
                 continue;
             }
-
+                barangJ = new BarangJualModel();
                 barangJ.setHargaJual(barangJual.getHarga());
                 barangJ.setStockBarangJual(barangJual.getStock());
                 barangJ.setBarangModel(barangService.getBarangByNamaBarang(barangJual.getNamaBarang()));
@@ -74,6 +74,7 @@ public class TransaksiRestController {
                 continue;
             }
 
+            barangR = new BarangReturModel();
             barangR.setHargaRetur(barangRetur.getHarga());
             barangR.setStockBarangRetur(barangRetur.getStock());
             barangR.setBarangModel(barangService.getBarangByNamaBarang(barangRetur.getNamaBarang()));
@@ -174,8 +175,6 @@ public class TransaksiRestController {
         List<Long> listJual = new ArrayList<>();
         List<Long> listRetur = new ArrayList<>();
         BarangModel barangModel = new BarangModel();
-        BarangJualModel barangJualModel = new BarangJualModel();
-        BarangReturModel barangReturModel = new BarangReturModel();
 
         for(BarangJualModel barangJual : transaksiService.getTransaksiByIdTransaksi(idTransaksi).getListBarangJual()) {
             listJual.add(barangJual.getIdBarangJual());
@@ -206,12 +205,13 @@ public class TransaksiRestController {
             } catch(NoSuchElementException e) {
                 continue;
             }
-
+            barangJ = new BarangJualModel();
                 barangJ.setHargaJual(barangJual.getHarga());
                 barangJ.setStockBarangJual(barangJual.getStock());
                 barangJ.setBarangModel(barangService.getBarangByNamaBarang(barangJual.getNamaBarang()));
                 barangJ.setTransaksiModel(newTransaksi);
                 barangJService.addBarang(barangJ);
+                System.out.println(barangJ.getIdBarangJual());
                 newTransaksi.addListBarangJual(barangJ);
 
                 barang.setStockBarang(barang.getStockBarang() - barangJ.getStockBarangJual());
@@ -226,7 +226,7 @@ public class TransaksiRestController {
             } catch(NoSuchElementException e) {
                 continue;
             }
-
+            barangR = new BarangReturModel();
             barangR.setHargaRetur(barangRetur.getHarga());
             barangR.setStockBarangRetur(barangRetur.getStock());
             barangR.setBarangModel(barangService.getBarangByNamaBarang(barangRetur.getNamaBarang()));
