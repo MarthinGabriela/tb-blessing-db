@@ -188,6 +188,7 @@ public class TransaksiRestController {
             trans.setListBarangJual(new ArrayList<BarangJualModel>());
             trans.setListBarangRetur(new ArrayList<BarangReturModel>());
             trans.setListPembayaran(new ArrayList<PembayaranModel>());
+            transaksiService.updateTransaksi(idTransaksi, trans);
             trans.setTanggalTransaksi(transaksiService.getTransaksiByIdTransaksi(idTransaksi).getTanggalTransaksi());
             BarangModel barang = new BarangModel();
             BarangJualModel barangJ = new BarangJualModel();
@@ -236,12 +237,11 @@ public class TransaksiRestController {
             transaksiService.updateHutangTransaksi(trans);
             transaksiService.updateNominalTransaksi(trans);
             TransaksiModel updatedTransaksi = transaksiService.getTransaksiByIdTransaksi(idTransaksi);
-            transaksiService.updateTransaksi(idTransaksi, updatedTransaksi);
             
             BaseResponse response = new BaseResponse();
             response.setStatus(200);
             response.setMessage("Update Transaksi Sukses");
-            response.setResult(trans);
+            response.setResult(updatedTransaksi);
 
             return response;
         } catch (NoSuchElementException e) {
