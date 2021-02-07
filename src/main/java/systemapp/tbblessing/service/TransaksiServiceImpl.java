@@ -133,6 +133,13 @@ public class TransaksiServiceImpl implements TransaksiService {
     }
 
     @Override
+    public TransaksiModel getFirst(){
+        List<TransaksiModel> list = transaksiDb.findTop1ByOrderByIdTransaksi();
+
+        return list.get(0);
+    }
+
+    @Override
     public List<TransaksiModel> getTransaksiByDate(String start, String end, long page) {
         Date starting = null;
         Date ending = null;

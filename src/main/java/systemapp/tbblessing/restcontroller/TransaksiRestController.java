@@ -112,61 +112,78 @@ public class TransaksiRestController {
         @RequestParam(name="page") Long page,
         @RequestParam(name="start", required = false) String start,
         @RequestParam(name="end", required = false) String end) {
-            if(start == null && end == null) {
-                long id = transaksiService.getLatest().getIdTransaksi();
-                long paging = 10*(page-1);
-                if(!(paging == 0L)) {
-                    id = id - paging;
-                }
-
-                if(transaksiService.getLatest().getIdTransaksi() < 10) {
-                    List<TransaksiModel> list = transaksiService.getAllTransaksi();
-
-                    PageResponse response = new PageResponse();
-                    response.setStatus(200);
-                    response.setMessage(false);
-                    response.setResult(list);
-
-                    return response;
-                } else if(id <= 0 && page > 1) {
-                    List<TransaksiModel> list = transaksiService.getAllTransaksi();
-
-                    PageResponse response = new PageResponse();
-                    response.setStatus(200);
-                    response.setMessage(false);
-                    response.setResult(list);
-
-                    return response;
-                } else {
-                    List<TransaksiModel> list = transaksiService.getTransaksiByPage(id);
-
-                    PageResponse response = new PageResponse();
-                    response.setStatus(200);
-                    if(list.get(0).getIdTransaksi().equals(1L)) {
-                        response.setMessage(false);
-                    } else {
-                        response.setMessage(true);
+            try{
+                if(start == null && end == null) {
+                    long id = transaksiService.getLatest().getIdTransaksi();
+                    long paging = 10*(page-1);
+                    if(!(paging == 0L)) {
+                        id = id - paging;
                     }
-                    Collections.reverse(list);
-                    response.setResult(list);
 
-                    return response;
+                    if(transaksiService.getLatest().getIdTransaksi() < 10) {
+                        List<TransaksiModel> list = transaksiService.getAllTransaksi();
+
+                        PageResponse response = new PageResponse();
+                        response.setStatus(200);
+                        response.setMessage(false);
+                        response.setResult(list);
+
+                        return response;
+                    } else if(id <= 0 && page > 1) {
+                        List<TransaksiModel> list = transaksiService.getAllTransaksi();
+
+                        PageResponse response = new PageResponse();
+                        response.setStatus(200);
+                        response.setMessage(false);
+                        response.setResult(list);
+
+                        return response;
+                    } else {
+                        List<TransaksiModel> list = transaksiService.getTransaksiByPage(id);
+
+                        PageResponse response = new PageResponse();
+                        response.setStatus(200);
+                        Long first = transaksiService.getFirst().getIdTransaksi();
+                        if(list.get(0).getIdTransaksi().equals(first)) {
+                            response.setMessage(false);
+                        } else {
+                            response.setMessage(true);
+                        }
+                        Collections.reverse(list);
+                        response.setResult(list);
+
+                        return response;
+                    }
+                } else {
+                    try {
+                        List<TransaksiModel> list = transaksiService.getTransaksiByDate(start, end, page);
+
+                        PageResponse response = new PageResponse();
+                        response.setStatus(200);
+                        if(list.get(0).getIdTransaksi().equals(1L)) {
+                            response.setMessage(false);
+                        } else {
+                            response.setMessage(true);
+                        }
+                        Collections.reverse(list);
+                        response.setResult(list);
+
+                        return response;
+                    } catch(Exception e) {
+                        PageResponse response = new PageResponse();
+                        response.setStatus(200);
+                        response.setMessage(false);
+                        response.setResult(new ArrayList<TransaksiModel>());
+                        return response;
+                    }
                 }
-            } else {
-                List<TransaksiModel> list = transaksiService.getTransaksiByDate(start, end, page);
-
+            } catch(Exception e) {
                 PageResponse response = new PageResponse();
                 response.setStatus(200);
-                if(list.get(0).getIdTransaksi().equals(1L)) {
-                    response.setMessage(false);
-                } else {
-                    response.setMessage(true);
-                }
-                Collections.reverse(list);
-                response.setResult(list);
-
+                response.setMessage(false);
+                response.setResult(new ArrayList<TransaksiModel>());
                 return response;
-                }
+            }
     }
 
     @PutMapping(value = "/transaksi/update/{idTransaksi}")
