@@ -241,7 +241,7 @@ public class TransaksiRestController {
             BaseResponse response = new BaseResponse();
             response.setStatus(200);
             response.setMessage("Update Transaksi Sukses");
-            response.setResult(updatedTransaksi);
+            response.setResult(trans);
 
             return response;
         } catch (NoSuchElementException e) {
