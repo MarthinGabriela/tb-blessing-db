@@ -181,7 +181,7 @@ public class TransaksiRestController {
             listJual.add(barangJual.getIdBarangJual());
             barangModel = barangJual.getBarangModel();
 
-            barangModel.setStockBarang(barangModel.getStockBarang() + barangJualModel.getStockBarangJual());
+            barangModel.setStockBarang(barangModel.getStockBarang() + barangJual.getStockBarangJual());
             barangService.updateBarang(barangModel.getIdBarang(), barangModel);
         }
 
@@ -190,7 +190,7 @@ public class TransaksiRestController {
 
             barangModel = barangRetur.getBarangModel();
 
-            barangModel.setStockBarang(barangModel.getStockBarang() - barangReturModel.getStockBarangRetur());
+            barangModel.setStockBarang(barangModel.getStockBarang() - barangRetur.getStockBarangRetur());
             barangService.updateBarang(barangModel.getIdBarang(), barangModel);
         }
 
