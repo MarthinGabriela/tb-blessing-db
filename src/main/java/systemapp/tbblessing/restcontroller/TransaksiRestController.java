@@ -173,13 +173,25 @@ public class TransaksiRestController {
         TransaksiModel newTransaksi = updateTransaksiConverter(transaksi);
         List<Long> listJual = new ArrayList<>();
         List<Long> listRetur = new ArrayList<>();
+        BarangModel barangModel = new BarangModel();
+        BarangJualModel barangJualModel = new BarangJualModel();
+        BarangReturModel barangReturModel = new BarangReturModel();
 
         for(BarangJualModel barangJual : transaksiService.getTransaksiByIdTransaksi(idTransaksi).getListBarangJual()) {
             listJual.add(barangJual.getIdBarangJual());
+            barangModel = barangJual.getBarangModel();
+
+            barangModel.setStockBarang(barangModel.getStockBarang() + barangJualModel.getStockBarangJual());
+            barangService.updateBarang(barangModel.getIdBarang(), barangModel);
         }
 
         for(BarangReturModel barangRetur : transaksiService.getTransaksiByIdTransaksi(idTransaksi).getListBarangRetur()) {
             listRetur.add(barangRetur.getIdBarangRetur());
+
+            barangModel = barangRetur.getBarangModel();
+
+            barangModel.setStockBarang(barangModel.getStockBarang() - barangReturModel.getStockBarangRetur());
+            barangService.updateBarang(barangModel.getIdBarang(), barangModel);
         }
 
         transaksiService.updateTransaksi(idTransaksi, newTransaksi);
