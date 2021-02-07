@@ -187,10 +187,11 @@ public class TransaksiRestController {
                 barang.setStockBarang(barang.getStockBarang() - barangRetur.getStockBarangRetur());
                 barangService.updateBarang(barang.getIdBarang(), barang);
             }
-
+            Date tanggalTransaksi = oldTransaksi.getTanggalTransaksi();
             transaksiService.deleteTransaksi(idTransaksi);
 
             TransaksiModel trans = new TransaksiModel();
+            trans.setIdTransaksi(idTransaksi);
             trans.setAlamat(transaksi.getAlamat());
             trans.setDiskon(transaksi.getDiskon());
             trans.setIdTransaksi(transaksi.getIdTransaksi());
@@ -200,7 +201,7 @@ public class TransaksiRestController {
             trans.setListBarangJual(new ArrayList<BarangJualModel>());
             trans.setListBarangRetur(new ArrayList<BarangReturModel>());
             trans.setListPembayaran(new ArrayList<PembayaranModel>());
-            trans.setTanggalTransaksi(oldTransaksi.getTanggalTransaksi());
+            trans.setTanggalTransaksi(tanggalTransaksi);
             
             barang = new BarangModel();
             BarangJualModel barangJ = new BarangJualModel();
@@ -245,7 +246,7 @@ public class TransaksiRestController {
                 barangService.updateBarang(barang.getIdBarang(), barang);
             }
 
-            transaksiService.updateTransaksi(idTransaksi, trans);
+            transaksiService.addTransaksi(trans);
             transaksiService.updateHutangTransaksi(trans);
             transaksiService.updateNominalTransaksi(trans);
             TransaksiModel updatedTransaksi = transaksiService.getTransaksiByIdTransaksi(idTransaksi);
