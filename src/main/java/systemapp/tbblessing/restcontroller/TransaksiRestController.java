@@ -166,7 +166,7 @@ public class TransaksiRestController {
         BaseResponse result = new BaseResponse();
         result.setStatus(200);
         result.setMessage("Update Transaksi Berhasil");
-        result.setResult(newTransaksi);
+        result.setResult(transaksiService.getTransaksiByIdTransaksi(idTransaksi));
 
         return result;
     }
