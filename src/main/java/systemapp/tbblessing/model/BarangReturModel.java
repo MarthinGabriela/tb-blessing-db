@@ -64,7 +64,7 @@ public class BarangReturModel implements Serializable {
         this.barangModel = barangModel;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "transaksi_id", referencedColumnName = "id_transaksi", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore

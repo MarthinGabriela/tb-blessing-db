@@ -80,7 +80,7 @@ public class TransaksiModel implements Serializable {
         this.tanggalTransaksi = tanggalTransaksi;
     }
 
-    @OneToMany(mappedBy = "transaksiModel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transaksiModel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<BarangJualModel> listBarangJual;
 
     public List<BarangJualModel> getListBarangJual() {
