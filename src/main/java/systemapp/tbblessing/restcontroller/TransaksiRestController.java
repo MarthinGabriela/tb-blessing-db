@@ -161,37 +161,24 @@ public class TransaksiRestController {
     @PutMapping(value = "/transaksi/update/{idTransaksi}")
     private BaseResponse updateTransaksi(@PathVariable(value = "idTransaksi") Long idTransaksi, @RequestBody UpdateTransaksiInput transaksi) {
         try {
-            BarangModel barang = new BarangModel();
-            TransaksiModel oldTransaksi = transaksiService.getTransaksiByIdTransaksi(idTransaksi);
+            TransaksiModel oldTransaksi = transaksiService.getTransaksiByIdTransaksi(transaksi.getIdTransaksi());
+            for(BarangJualModel barangJ : oldTransaksi.getListBarangJual()) {
+                BarangModel barang = barangJ.getBarangModel();
 
-            for(BarangJualModel barangJual : oldTransaksi.getListBarangJual()) {
+                barang.setStockBarang(barang.getStockBarang() + barangJ.getStockBarangJual());
+                barangService.updateBarang(barang.getIdBarang(), barang);
+                barangJService.deleteBarang(barangJ.getIdBarangJual());
+            }
 
-                try {
-                    barang = barangJual.getBarangModel();
-                } catch(NoSuchElementException e) {
-                    continue;
-                }
-            
-                barang.setStockBarang(barang.getStockBarang() + barangJual.getStockBarangJual());
+            for(BarangReturModel barangR : oldTransaksi.getListBarangRetur()) {
+                BarangModel barang = barangR.getBarangModel();
+
+                barang.setStockBarang(barang.getStockBarang() - barangR.getStockBarangRetur());
                 barangService.updateBarang(barang.getIdBarang(), barang);
+                barangRService.deleteBarang(barangR.getIdBarangRetur());
             }
-    
-            for(BarangReturModel barangRetur : oldTransaksi.getListBarangRetur()) {
-    
-                try {
-                    barang = barangRetur.getBarangModel();
-                } catch(NoSuchElementException e) {
-                    continue;
-                }
-    
-                barang.setStockBarang(barang.getStockBarang() - barangRetur.getStockBarangRetur());
-                barangService.updateBarang(barang.getIdBarang(), barang);
-            }
-            Date tanggalTransaksi = oldTransaksi.getTanggalTransaksi();
-            transaksiService.deleteTransaksi(idTransaksi);
 
             TransaksiModel trans = new TransaksiModel();
-            trans.setIdTransaksi(idTransaksi);
             trans.setAlamat(transaksi.getAlamat());
             trans.setDiskon(transaksi.getDiskon());
             trans.setIdTransaksi(transaksi.getIdTransaksi());
@@ -201,9 +188,8 @@ public class TransaksiRestController {
             trans.setListBarangJual(new ArrayList<BarangJualModel>());
             trans.setListBarangRetur(new ArrayList<BarangReturModel>());
             trans.setListPembayaran(new ArrayList<PembayaranModel>());
-            trans.setTanggalTransaksi(tanggalTransaksi);
-            
-            barang = new BarangModel();
+            trans.setTanggalTransaksi(transaksiService.getTransaksiByIdTransaksi(idTransaksi).getTanggalTransaksi());
+            BarangModel barang = new BarangModel();
             BarangJualModel barangJ = new BarangJualModel();
             BarangReturModel barangR =  new BarangReturModel();
             
@@ -246,10 +232,11 @@ public class TransaksiRestController {
                 barangService.updateBarang(barang.getIdBarang(), barang);
             }
 
-            transaksiService.addTransaksi(trans);
+            transaksiService.updateTransaksi(idTransaksi, trans);
             transaksiService.updateHutangTransaksi(trans);
             transaksiService.updateNominalTransaksi(trans);
             TransaksiModel updatedTransaksi = transaksiService.getTransaksiByIdTransaksi(idTransaksi);
+            transaksiService.updateTransaksi(idTransaksi, updatedTransaksi);
             
             BaseResponse response = new BaseResponse();
             response.setStatus(200);
