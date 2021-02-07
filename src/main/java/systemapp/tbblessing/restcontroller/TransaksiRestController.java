@@ -188,8 +188,8 @@ public class TransaksiRestController {
             trans.setListBarangJual(new ArrayList<BarangJualModel>());
             trans.setListBarangRetur(new ArrayList<BarangReturModel>());
             trans.setListPembayaran(new ArrayList<PembayaranModel>());
-            transaksiService.updateTransaksi(idTransaksi, trans);
             trans.setTanggalTransaksi(transaksiService.getTransaksiByIdTransaksi(idTransaksi).getTanggalTransaksi());
+            transaksiService.updateTransaksi(idTransaksi, trans);
             BarangModel barang = new BarangModel();
             BarangJualModel barangJ = new BarangJualModel();
             BarangReturModel barangR =  new BarangReturModel();
