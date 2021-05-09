@@ -10,11 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.*;
 
@@ -23,7 +24,8 @@ import java.util.*;
 public class BarangModel implements Serializable {
     @Id
     @Column(name = "id_barang")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonInclude
+    @Transient
     private Long idBarang;
 
     public Long getIdBarang() {
