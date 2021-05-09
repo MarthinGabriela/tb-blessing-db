@@ -9,23 +9,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
+import org.hibernate.annotations.GenericGenerator;
 import java.util.*;
 
 @Entity
 @Table(name = "barang")
+@SequenceGenerator(name="seq", initialValue=517)
 public class BarangModel implements Serializable {
     @Id
     @Column(name = "id_barang")
-    @JsonInclude
-    @Transient
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
     private Long idBarang;
 
     public Long getIdBarang() {
