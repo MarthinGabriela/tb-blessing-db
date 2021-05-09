@@ -23,7 +23,7 @@ import java.util.*;
 public class BarangModel implements Serializable {
     @Id
     @Column(name = "id_barang")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long idBarang;
 
     public Long getIdBarang() {
