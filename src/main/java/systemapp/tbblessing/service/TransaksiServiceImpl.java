@@ -1,9 +1,9 @@
 package systemapp.tbblessing.service;
 
+import org.springframework.data.domain.Pageable;
 import systemapp.tbblessing.model.*;
 import systemapp.tbblessing.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -121,8 +121,9 @@ public class TransaksiServiceImpl implements TransaksiService {
     }
 
     @Override
-    public List<TransaksiModel> getTransaksiByPage(Long input) {
-        return transaksiDb.findByIdTransaksiBetween(input - 9, input);
+    public List<TransaksiModel> getTransaksiByPage(Long page) {
+        Pageable paging = PageRequest.of(page.intValue(), 10, Sort.by("idTransaksi").descending());
+        return transaksiDb.findAll(paging).toList();
     }
 
     @Override
