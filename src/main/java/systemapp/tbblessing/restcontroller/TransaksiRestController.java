@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import javax.validation.Valid;
+import systemapp.tbblessing.object.BaseResponse;
 
 @RestController
 @RequestMapping("api/v1")
@@ -179,6 +180,28 @@ public class TransaksiRestController {
                         return response;
                     }
                 }
+            } catch(Exception e) {
+                PageResponse response = new PageResponse();
+                response.setStatus(200);
+                response.setMessage(false);
+                response.setResult(new ArrayList<TransaksiModel>());
+                return response;
+            }
+    }
+
+    @GetMapping(value = "/list-transaksi/search/{namaPembeli}")
+    private PageResponse searchByNamaTransaksi(
+        @PathVariable(value="namaPembeli") String namaPembeli,
+        @RequestParam(name="page") Long page) {
+            try{
+                    List<TransaksiModel> list = transaksiService.getTransaksiByPageName(page - 1, namaPembeli);
+
+                    PageResponse response = new PageResponse();
+                    response.setStatus(200);
+                    response.setMessage(list.size() >= 10);
+                    response.setResult(list);
+
+                    return response;
             } catch(Exception e) {
                 PageResponse response = new PageResponse();
                 response.setStatus(200);

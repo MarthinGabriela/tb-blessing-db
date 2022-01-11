@@ -18,4 +18,5 @@ public interface TransaksiService {
     TransaksiModel getLatest();
     TransaksiModel getFirst();
 	List<TransaksiModel> getTransaksiByDate(String start, String end, long page);
+    List<TransaksiModel> getTransaksiByPageName(Long l, String namaPembeli);
 }

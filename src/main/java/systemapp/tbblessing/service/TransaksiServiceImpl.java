@@ -176,4 +176,10 @@ public class TransaksiServiceImpl implements TransaksiService {
                     .setMaxResults(10)
                     .getResultList();
     }
+
+    @Override
+    public List<TransaksiModel> getTransaksiByPageName(Long page, String namaPembeli){
+        Pageable paging = PageRequest.of(page.intValue(), 10, Sort.by("idTransaksi").descending());
+        return transaksiDb.findAllByNamaPembeli(namaPembeli, paging);
+    }
 }
