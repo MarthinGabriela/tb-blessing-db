@@ -4,6 +4,9 @@ import systemapp.tbblessing.model.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 public interface TransaksiService {
     TransaksiModel addTransaksi(TransaksiModel transaksi);
     TransaksiModel updateTransaksi(Long idTransaksi, TransaksiModel transaksi);
@@ -18,5 +21,6 @@ public interface TransaksiService {
     TransaksiModel getLatest();
     TransaksiModel getFirst();
 	List<TransaksiModel> getTransaksiByDate(String start, String end, long page);
-    List<TransaksiModel> getTransaksiByPageName(Long l, String namaPembeli);
+    Page<TransaksiModel> findAll(PageRequest pageable);
+    Page<TransaksiModel> findAllWithCondition(String search, String start_date, String end_date, PageRequest pageable);
 }

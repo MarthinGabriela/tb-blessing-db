@@ -4,6 +4,8 @@ import org.springframework.data.domain.Pageable;
 import systemapp.tbblessing.model.*;
 import systemapp.tbblessing.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
@@ -178,8 +181,36 @@ public class TransaksiServiceImpl implements TransaksiService {
     }
 
     @Override
-    public List<TransaksiModel> getTransaksiByPageName(Long page, String namaPembeli){
-        Pageable paging = PageRequest.of(page.intValue(), 10, Sort.by("idTransaksi").descending());
-        return transaksiDb.findAllByNamaPembeli(namaPembeli, paging);
+    public Page<TransaksiModel> findAll(PageRequest pageable) {
+        return transaksiDb.findAll(pageable);
+    }
+    
+    @Override
+    public Page<TransaksiModel> findAllWithCondition(String search, String start_date, String end_date, PageRequest pageable) {
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+
+        String search_name = "";
+
+        if(!(search == "")) {
+            search_name += " AND LOWER(nama_pembeli) LIKE '%"+search.toLowerCase()+"%'";
+        }
+        if(!(start_date == "")) {
+            search_name += " AND tanggal_transaksi >= '"+start_date+"'";
+        }
+        if(!(end_date == "")) {
+            search_name += " AND tanggal_transaksi <= '"+end_date+"'";
+        }
+
+        Query query = entityManager.createNativeQuery("SELECT COUNT(*) FROM transaksi WHERE 1=1 "+search_name);
+        int count = ((Number) query.getSingleResult()).intValue();
+
+        Query query2 = entityManager.createNativeQuery("SELECT * FROM transaksi WHERE 1=1 "+search_name+" ORDER BY tanggal_transaksi DESC", TransaksiModel.class);
+        query2.setFirstResult((pageNumber) * pageSize);
+        query2.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
+        List<TransaksiModel> res = query2.getResultList();
+        Page<TransaksiModel> result = new PageImpl<>(res, pageable, count);
+        return result;
     }
 }

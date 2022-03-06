@@ -9,6 +9,11 @@ import systemapp.tbblessing.object.TransaksiInput;
 import systemapp.tbblessing.object.UpdateTransaksiInput;
 import systemapp.tbblessing.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -16,10 +21,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import javax.validation.Valid;
-import systemapp.tbblessing.object.BaseResponse;
 
 @RestController
 @RequestMapping("api/v1")
@@ -189,27 +195,41 @@ public class TransaksiRestController {
             }
     }
 
-    @GetMapping(value = "/list-transaksi/search/{namaPembeli}")
-    private PageResponse searchByNamaTransaksi(
-        @PathVariable(value="namaPembeli") String namaPembeli,
-        @RequestParam(name="page") Long page) {
-            try{
-                    List<TransaksiModel> list = transaksiService.getTransaksiByPageName(page - 1, namaPembeli);
+    @GetMapping(value = "/list-transaksi-v2")
+	public ResponseEntity<Map<String, Object>> listTransaksi(@RequestParam("draw") int draw,
+        @RequestParam("start") int start,
+        @RequestParam("length") int length,
+        @RequestParam(name = "search[value]", required = false) String search,
+        @RequestParam(name = "minDate", required = false) String minDate,
+        @RequestParam(name = "maxDate", required = false) String maxDate
+        ) {
+		try {
+			int page = start / length; //Calculate page number
+            PageRequest pageable = PageRequest.of(
+                    page,
+                    length,
+                    Sort.by(Sort.Direction.DESC, "tanggalTransaksi")
+            );
 
-                    PageResponse response = new PageResponse();
-                    response.setStatus(200);
-                    response.setMessage(list.size() >= 10);
-                    response.setResult(list);
-
-                    return response;
-            } catch(Exception e) {
-                PageResponse response = new PageResponse();
-                response.setStatus(200);
-                response.setMessage(false);
-                response.setResult(new ArrayList<TransaksiModel>());
-                return response;
+            Page<TransaksiModel> responseData;
+            if(search == "" && minDate == "" && maxDate == "") {
+                responseData = transaksiService.findAll(pageable);
+            } else {
+                responseData = transaksiService.findAllWithCondition(search, minDate, maxDate, pageable);
             }
-    }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("currentPage", responseData.getNumber() + 1);
+            response.put("recordsTotal", responseData.getTotalElements());
+            response.put("recordsFiltered", responseData.getTotalElements());
+            response.put("totalPages", responseData.getTotalPages());
+            response.put("data", responseData.getContent());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
     @PutMapping(value = "/transaksi/update/{idTransaksi}")
     private BaseResponse updateTransaksi(@PathVariable(value = "idTransaksi") Long idTransaksi, @RequestBody UpdateTransaksiInput transaksi) {

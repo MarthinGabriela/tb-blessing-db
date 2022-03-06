@@ -1,11 +1,7 @@
 package systemapp.tbblessing.repository;
 
 import systemapp.tbblessing.model.*;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.Date;
@@ -22,5 +18,4 @@ public interface TransaksiDb extends JpaRepository<TransaksiModel, Long>{
 	List<TransaksiModel> findByIdTransaksiBetween(Long input, long l);
     List<TransaksiModel> findTop1ByOrderByIdTransaksiDesc();
 	List<TransaksiModel> findTop1ByOrderByIdTransaksi();
-    List<TransaksiModel> findAllByNamaPembeli(String namaPembeli, Pageable paging);
 }
